@@ -1,6 +1,9 @@
 from pathlib import Path
 from dotenv import load_dotenv
+from pymongo import MongoClient
 import os
+
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -17,6 +20,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'rest_framework',
+    'django_celery_results',
+    'django_celery_beat',
+
+    'api.apps.ApiConfig',
+    'experiments.apps.ExperimentsConfig',
 ]
 
 MIDDLEWARE = [
@@ -60,6 +70,30 @@ DATABASES = {
         'PORT': os.getenv('POSTGRES_PORT'),
     }
 }
+
+MONGO_CLIENT = MongoClient(
+    host=os.getenv('MONGO_HOST'),
+    port=int(os.getenv('MONGO_PORT')),
+    username=os.getenv('MONGO_USER'),
+    password=os.getenv('MONGO_PASSWORD'),
+    authSource='admin'
+)
+
+MONGO_DB = MONGO_CLIENT[os.getenv('MONGO_DB_NAME')]
+
+REDIS_HOST = os.getenv('REDIS_HOST')
+
+REDIS_PORT = int(os.getenv('REDIS_PORT'))
+
+REDIS_DB = int(os.getenv('REDIS_DB'))
+
+REDIS_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
+
+CELERY_BROKER_URL = REDIS_URL
+
+CELERY_RESULT_BACKEND = REDIS_URL
+
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
 AUTH_PASSWORD_VALIDATORS = [
     {
