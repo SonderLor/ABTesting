@@ -52,7 +52,17 @@ services:
     depends_on:
       - redis
 
+  grafana:
+    image: grafana/grafana-enterprise
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - postgres
+
 volumes:
   postgres_data:
   mongo_data:
   redis_data:
+  grafana_data:

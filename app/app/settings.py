@@ -1,4 +1,6 @@
 from pathlib import Path
+
+from celery.schedules import crontab
 from dotenv import load_dotenv
 from pymongo import MongoClient
 import os
@@ -94,6 +96,13 @@ CELERY_BROKER_URL = REDIS_URL
 CELERY_RESULT_BACKEND = REDIS_URL
 
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
+CELERY_BEAT_SCHEDULE = {
+    'update_metrics_every_10_seconds': {
+        'task': 'experiments.tasks.calculate_metrics',
+        'schedule': 10.0,
+    },
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {
