@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  web:
+    build: ./app
+    command: gunicorn app.wsgi:application --bind 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./app/.env
+    depends_on:
+      - postgres
+      - mongo
+      - redis
+
+  postgres:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./app/.env
+
+  mongo:
+    image: mongo:6
+    volumes:
+      - mongo_data:/data/db
+    env_file:
+      - ./app/.env
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  celery:
+    build: ./app
+    command: celery -A app worker --loglevel=info
+    env_file:
+      - ./app/.env
+    depends_on:
+      - redis
+      - mongo
+      - postgres
+
+  celery-beat:
+    build: ./app
+    command: celery -A app beat --loglevel=info
+    env_file:
+      - ./app/.env
+    depends_on:
+      - redis
+
+volumes:
+  postgres_data:
+  mongo_data:
+  redis_data:
