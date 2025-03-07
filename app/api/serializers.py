@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from experiments.models import Experiment, UserGroup
 
+
 class ExperimentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Experiment
@@ -17,6 +18,7 @@ class ExperimentSerializer(serializers.ModelSerializer):
                 "Сумма значений group_ratio должна быть 100%."
             )
         return value
+
 
 class UserGroupSerializer(serializers.ModelSerializer):
     class Meta:
