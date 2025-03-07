@@ -99,7 +99,7 @@ CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
 CELERY_BEAT_SCHEDULE = {
     'update_metrics_every_10_seconds': {
-        'task': 'experiments.tasks.calculate_metrics',
+        'task': 'app.tasks.calculate_metrics',
         'schedule': 10.0,
     },
 }
