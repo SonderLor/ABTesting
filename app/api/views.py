@@ -6,8 +6,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from app.tasks import log_event_task
-from experiments.models import Experiment, UserGroup
-from .serializers import ExperimentSerializer, UserGroupSerializer
+from experiments.models import Experiment, UserGroup, Event
+from .serializers import ExperimentSerializer, UserGroupSerializer, EventSerializer
 
 
 class ExperimentViewSet(viewsets.ModelViewSet):
@@ -54,6 +54,11 @@ class UserGroupViewSet(viewsets.ModelViewSet):
         if experiment_id:
             return UserGroup.objects.filter(experiment_id=experiment_id)
         return super().get_queryset()
+
+
+class EventViewSet(viewsets.ModelViewSet):
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer
 
 
 class EventLogView(APIView):

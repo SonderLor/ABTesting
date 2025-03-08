@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from experiments.models import Experiment, UserGroup
+from experiments.models import Experiment, UserGroup, Event
 
 
 class ExperimentSerializer(serializers.ModelSerializer):
@@ -26,5 +26,16 @@ class UserGroupSerializer(serializers.ModelSerializer):
         fields = '__all__'
         extra_kwargs = {
             'user_id': {'required': True},
+            'experiment': {'required': True},
+        }
+
+
+class EventSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Event
+        fields = '__all__'
+        extra_kwargs = {
+            'user_id': {'required': True},
+            'event_type': {'required': True},
             'experiment': {'required': True},
         }

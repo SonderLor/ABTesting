@@ -1,6 +1,4 @@
 from pathlib import Path
-
-from celery.schedules import crontab
 from dotenv import load_dotenv
 from pymongo import MongoClient
 import os
@@ -15,7 +13,7 @@ DEBUG = os.getenv('DEBUG') == 'True'
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
 
-CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', '').split(',')
+CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS').split(',')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -82,7 +80,7 @@ MONGO_CLIENT = MongoClient(
     port=int(os.getenv('MONGO_PORT')),
     username=os.getenv('MONGO_USER'),
     password=os.getenv('MONGO_PASSWORD'),
-    authSource='admin'
+    authSource=os.getenv('MONGO_USER'),
 )
 
 MONGO_DB = MONGO_CLIENT[os.getenv('MONGO_DB_NAME')]
@@ -102,9 +100,9 @@ CELERY_RESULT_BACKEND = REDIS_URL
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
 CELERY_BEAT_SCHEDULE = {
-    'update_metrics_every_10_seconds': {
+    'update_metrics_every_30_seconds': {
         'task': 'app.tasks.calculate_metrics',
-        'schedule': 10.0,
+        'schedule': 30.0,
     },
 }
 
