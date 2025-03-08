@@ -18,7 +18,7 @@ class ExperimentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
 
-    @action(detail=True, methods=['GET'])
+    @action(detail=True, methods=['GET'], url_path='assign-group')
     def assign_group(self, request, pk=None):
         user_id = request.query_params.get('user_id')
         experiment = self.get_object()

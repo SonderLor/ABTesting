@@ -27,36 +27,37 @@ def calculate_metrics():
     for experiment in experiments:
         groups_data = {}
         for group in experiment.user_groups.all():
-            views = experiment.events.filter(
-                event_type='view',
+            user_ids = experiment.user_groups.filter(
                 group=group.group
-            ).count()
-            clicks = experiment.events.filter(
-                event_type='click',
-                group=group.group
-            ).count()
+            ).values_list('user_id', flat=True)
 
-            """ CTR (Click-Through Rate)
-                Процент пользователей, которые кликнули на элемент,
-                относительно общего числа пользователей, увидевших его.
-            """
+            views = experiment.events.filter(event_type='view', user_id__in=user_ids).count()
+            clicks = experiment.events.filter(event_type='click', user_id__in=user_ids).count()
+
             ctr = (clicks / views) * 100 if views > 0 else 0
             groups_data[group.group] = {'ctr': ctr}
 
         group_a_data = [
             1 if e.event_type == 'click' else 0
-            for e in experiment.events.filter(group='A')
+            for e in experiment.events.filter(
+                user_id__in=experiment.user_groups.filter(
+                    group='A'
+                ).values_list('user_id', flat=True)
+            )
         ]
         group_b_data = [
             1 if e.event_type == 'click' else 0
-            for e in experiment.events.filter(group='B')
+            for e in experiment.events.filter(
+                user_id__in=experiment.user_groups.filter(
+                    group='B'
+                ).values_list('user_id', flat=True)
+            )
         ]
 
-        """ P-value (Статистическая значимость)
-            Вероятность того, что различия между группами A и B случайны.
-            Если p_value < 0.05, различия считаются значимыми.
-        """
-        t_stat, p_value = stats.ttest_ind(group_a_data, group_b_data)
+        if group_a_data and group_b_data:
+            t_stat, p_value = stats.ttest_ind(group_a_data, group_b_data, equal_var=False)
+        else:
+            p_value = None
 
         for group, data in groups_data.items():
             ABMetric.objects.create(
