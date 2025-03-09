@@ -100,9 +100,9 @@ CELERY_RESULT_BACKEND = REDIS_URL
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
 CELERY_BEAT_SCHEDULE = {
-    'update_metrics_every_30_seconds': {
+    'update_metrics_every_5_seconds': {
         'task': 'app.tasks.calculate_metrics',
-        'schedule': 30.0,
+        'schedule': 5.0,
     },
 }
 
